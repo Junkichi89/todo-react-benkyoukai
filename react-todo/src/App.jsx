@@ -5,7 +5,7 @@ const App = () => {
   const [todos, setTodos] = useState([]);
   const [todoTitle, setTodoTitle] = useState('');
   const [todoId, setTodoId] = useState(0);
-  const [state] = useState('未着手');
+  const [state] = useState('notStarted');
 
   const [isEditable, setIsEditable] = useState(false);
   const [editIndex, setEditIndex] = useState();
@@ -61,35 +61,34 @@ const App = () => {
   };
 
   /** Todoの状態変更 */
-  const changeState = (targetTodo) => {
+  const handleChangeState = (id, e) => {
     const newTodos = todos.map((todo) => {
-      if (todo.id === targetTodo.id) {
-
-        if (todo.todoState === '未着手') {
-
-          todo.todoState = '作業中';
-
-          return ({...todo})
-
-        } else if (todo.todoState === '作業中') {
-
-          todo.todoState = '完了';
-
-          return ({...todo})
-
-        } else if (todo.todoState === '完了') {
-
-          todo.todoState = '未着手';
-          
-          return ({...todo})
-        }
+      if (todo.id === id) {
+        todo.todoState = e.target.value;
+        return { ...todo };
       }
-
-      return ({ ...todo });
-      
+      return { ...todo };
     });
+    //   if (todo.id === targetTodo.id) {
+    //     if (todo.todoState === '未着手') {
+    //       todo.todoState = '作業中';
 
-    setTodos(newTodos)
+    //       return { ...todo };
+    //     } else if (todo.todoState === '作業中') {
+    //       todo.todoState = '完了';
+
+    //       return { ...todo };
+    //     } else if (todo.todoState === '完了') {
+    //       todo.todoState = '未着手';
+
+    //       return { ...todo };
+    //     }
+    //   }
+
+    //   return { ...todo };
+    // });
+
+    setTodos(newTodos);
   };
 
   return (
@@ -130,7 +129,14 @@ const App = () => {
         {todos.map((todo, index) => (
           <li key={todo.id}>
             <span>{todo.title}</span>
-            <button onClick={() => changeState(todo)}>{todo.todoState}</button>
+            <select
+              value={todo.todoState}
+              onChange={(e) => handleChangeState(todo.id, e)}
+            >
+              <option value='notStarted'>未着手</option>
+              <option value='inProgress'>作業中</option>
+              <option value='done'>完了</option>
+            </select>
             <button onClick={() => openEditForm(index)}>編集</button>
             <button onClick={() => deleteTodo(todo)}>削除</button>
           </li>
