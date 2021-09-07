@@ -62,7 +62,7 @@ const App = () => {
   };
 
   /** Todoの状態変更 */
-  const handleChangeState = (id, e) => {
+  const handleChangeStatus = (id, e) => {
     // const newTodos = todos.map((todo) => {
     //   if (todo.id === id) {
     //     todo.status = e.target.value;
@@ -143,7 +143,7 @@ const App = () => {
             <span>{todo.title}</span>
             <select
               value={todo.status}
-              onChange={(e) => handleChangeState(todo.id, e)}
+              onChange={(e) => handleChangeStatus(todo.id, e)}
             >
               <option value='notStarted'>未着手</option>
               <option value='inProgress'>作業中</option>
