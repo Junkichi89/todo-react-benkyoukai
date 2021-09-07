@@ -5,7 +5,8 @@ const App = () => {
   const [todos, setTodos] = useState([]);
   const [todoTitle, setTodoTitle] = useState('');
   const [todoId, setTodoId] = useState(0);
-  const [state] = useState('notStarted');
+  // const [state] = useState('notStarted');
+  const [filter, setFilter] = useState('notStarted');
 
   const [isEditable, setIsEditable] = useState(false);
   const [editIndex, setEditIndex] = useState();
@@ -40,7 +41,7 @@ const App = () => {
 
   /** Todo新規作成 */
   const addTodo = () => {
-    setTodos([...todos, { id: todoId, title: todoTitle, todoState: state }]);
+    setTodos([...todos, { id: todoId, title: todoTitle, status: 'notStarted' }]);
     setTodoId(todoId + 1);
     resetFormInput();
   };
@@ -62,34 +63,38 @@ const App = () => {
 
   /** Todoの状態変更 */
   const handleChangeState = (id, e) => {
-    const newTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        todo.todoState = e.target.value;
-        return { ...todo };
-      }
-      return { ...todo };
-    });
-    //   if (todo.id === targetTodo.id) {
-    //     if (todo.todoState === '未着手') {
-    //       todo.todoState = '作業中';
-
-    //       return { ...todo };
-    //     } else if (todo.todoState === '作業中') {
-    //       todo.todoState = '完了';
-
-    //       return { ...todo };
-    //     } else if (todo.todoState === '完了') {
-    //       todo.todoState = '未着手';
-
-    //       return { ...todo };
-    //     }
+    // const newTodos = todos.map((todo) => {
+    //   if (todo.id === id) {
+    //     todo.status = e.target.value;
+    //     return { ...todo };
     //   }
-
     //   return { ...todo };
     // });
+    // setTodos(newTodos);
 
-    setTodos(newTodos);
+    setTodos(() =>
+      todos.map((todo) => {
+        if (todo.id === id) {
+          todo.status = e.target.value;
+          return { ...todo };
+        }
+        return { ...todo };
+      })
+    );
   };
+
+  const filteredTodos = todos.filter((todo) => {
+    switch (filter) {
+      case 'notStarted':
+        return todo.status === 'notStarted';
+      case 'inProgress':
+        return todo.status === 'inProgress';
+      case 'done':
+        return todo.status === 'done';
+      default:
+        return todo;
+    }
+  });
 
   return (
     <>
@@ -124,13 +129,20 @@ const App = () => {
         }
       })()}
 
+      <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <option value='all'>すべて</option>
+        <option value='notStarted'>未着手</option>
+        <option value='inProgress'>作業中</option>
+        <option value='done'>完了</option>
+      </select>
+
       {/* Todoリスト */}
       <ul>
-        {todos.map((todo, index) => (
+        {filteredTodos.map((todo, index) => (
           <li key={todo.id}>
             <span>{todo.title}</span>
             <select
-              value={todo.todoState}
+              value={todo.status}
               onChange={(e) => handleChangeState(todo.id, e)}
             >
               <option value='notStarted'>未着手</option>
