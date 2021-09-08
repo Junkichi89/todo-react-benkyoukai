@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const App = () => {
   /** Todoリスト */
   const [todos, setTodos] = useState([]);
   const [todoTitle, setTodoTitle] = useState('');
   const [todoId, setTodoId] = useState(0);
-  // const [state] = useState('notStarted');
+  const [status, setStatus] = useState('notStarted');
+  const [statusChangeId, setStatusChangeId] = useState();
   const [filter, setFilter] = useState('notStarted');
 
   const [isEditable, setIsEditable] = useState(false);
@@ -41,7 +42,7 @@ const App = () => {
 
   /** Todo新規作成 */
   const addTodo = () => {
-    setTodos([...todos, { id: todoId, title: todoTitle, status: 'notStarted' }]);
+    setTodos([...todos, { id: todoId, title: todoTitle, todoStatus: status }]);
     setTodoId(todoId + 1);
     resetFormInput();
   };
@@ -62,39 +63,30 @@ const App = () => {
   };
 
   /** Todoの状態変更 */
-  const handleChangeStatus = (id, e) => {
-    // const newTodos = todos.map((todo) => {
-    //   if (todo.id === id) {
-    //     todo.status = e.target.value;
-    //     return { ...todo };
-    //   }
-    //   return { ...todo };
-    // });
-    // setTodos(newTodos);
-
-    setTodos(() =>
-      todos.map((todo) => {
-        if (todo.id === id) {
-          todo.status = e.target.value;
-          return { ...todo };
-        }
-        return { ...todo };
-      })
-    );
-  };
 
   const filteredTodos = todos.filter((todo) => {
     switch (filter) {
       case 'notStarted':
-        return todo.status === 'notStarted';
+        return todo.todoStatus === 'notStarted';
       case 'inProgress':
-        return todo.status === 'inProgress';
+        return todo.todoStatus === 'inProgress';
       case 'done':
-        return todo.status === 'done';
+        return todo.todoStatus === 'done';
       default:
         return todo;
     }
   });
+
+  const handleChangeStatus = function() {
+    const newTodos = filteredTodos.map((todo) =>
+    todo.id === statusChangeId ? { ...todo, todoStatus: status } : { ...todo }
+  );
+  setTodos(newTodos);
+  }
+
+  useEffect(() => {
+    handleChangeStatus();
+  }, [status]);
 
   return (
     <>
@@ -142,8 +134,13 @@ const App = () => {
           <li key={todo.id}>
             <span>{todo.title}</span>
             <select
-              value={todo.status}
-              onChange={(e) => handleChangeStatus(todo.id, e)}
+              value={todo.todoStatus}
+              onChange={(e) => {
+                setStatus(() => {
+                  setStatusChangeId(todo.id);
+                  return e.target.value;
+                });
+              }}
             >
               <option value='notStarted'>未着手</option>
               <option value='inProgress'>作業中</option>
