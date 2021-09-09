@@ -6,7 +6,7 @@ const App = () => {
   const [todoTitle, setTodoTitle] = useState('');
   const [todoId, setTodoId] = useState(0);
   const [filter, setFilter] = useState('notStarted');
-  const [filteredTodos, setFilteredTodos] = useState(todos);
+  const [filteredTodos, setFilteredTodos] = useState([]);
 
   const [isEditable, setIsEditable] = useState(false);
   const [editIndex, setEditIndex] = useState();
@@ -41,7 +41,10 @@ const App = () => {
 
   /** Todo新規作成 */
   const addTodo = () => {
-    setTodos([...todos, { id: todoId, title: todoTitle, todoStatus: 'notStarted' }]);
+    setTodos([
+      ...todos,
+      { id: todoId, title: todoTitle, todoStatus: 'notStarted' },
+    ]);
     setTodoId(todoId + 1);
     resetFormInput();
   };
@@ -87,15 +90,12 @@ const App = () => {
   }, [filter, todos]);
 
   /** Todoの状態変更 */
-  const handleStatusChange = (id,e) => {
+  const handleStatusChange = (id, e) => {
     const newTodos = todos.map((todo) =>
-        todo.id === id
-          ? { ...todo, todoStatus: e.target.value }
-          : { ...todo }
-    )
-    setTodos(newTodos)
-  }
-
+      todo.id === id ? { ...todo, todoStatus: e.target.value } : todo
+    );
+    setTodos(newTodos);
+  };
 
   return (
     <>
@@ -138,7 +138,7 @@ const App = () => {
             <span>{todo.title}</span>
             <select
               value={todo.todoStatus}
-              onChange={(e)=> handleStatusChange(todo.id, e)}
+              onChange={(e) => handleStatusChange(todo.id, e)}
             >
               <option value='notStarted'>未着手</option>
               <option value='inProgress'>作業中</option>
