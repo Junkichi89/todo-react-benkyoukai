@@ -40,7 +40,7 @@ const App = () => {
   };
 
   /** Todo新規作成 */
-  const addTodo = () => {
+  const handleAddTodo = () => {
     setTodos([
       ...todos,
       { id: todoId, title: todoTitle, todoStatus: 'notStarted' },
@@ -108,7 +108,7 @@ const App = () => {
             value={todoTitle}
             onChange={handleAddFormChanges}
           />
-          <button onClick={addTodo}>作成</button>
+          <button onClick={handleAddTodo}>作成</button>
         </>
       ) : (
         /* 編集フォーム */
