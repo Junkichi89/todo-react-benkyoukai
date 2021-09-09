@@ -1,12 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 const App = () => {
   /** Todoリスト */
   const [todos, setTodos] = useState([]);
   const [todoTitle, setTodoTitle] = useState('');
   const [todoId, setTodoId] = useState(0);
-  // const [status, setStatus] = useState('notStarted');
-  // const [statusChangeId, setStatusChangeId] = useState();
   const [filter, setFilter] = useState('notStarted');
   const [filteredTodos, setFilteredTodos] = useState(todos);
 
@@ -63,48 +61,32 @@ const App = () => {
     setEditIndex();
   };
 
-  /** Todoの状態変更 */
-
-  const filteringTodos = useCallback(() => {
-    switch (filter) {
-      case 'notStarted':
-        setFilteredTodos(
-          todos.filter((todo) => todo.todoStatus === 'notStarted')
-        );
-        break;
-      case 'inProgress':
-        setFilteredTodos(
-          todos.filter((todo) => todo.todoStatus === 'inProgress')
-        );
-        break;
-      case 'done':
-        setFilteredTodos(todos.filter((todo) => todo.todoStatus === 'done'));
-        break;
-      default:
-        setFilteredTodos(todos);
-    }
-  }, [filter, todos]);
+  /** Todoの絞り込みを検値 */
 
   useEffect(() => {
+    const filteringTodos = () => {
+      switch (filter) {
+        case 'notStarted':
+          setFilteredTodos(
+            todos.filter((todo) => todo.todoStatus === 'notStarted')
+          );
+          break;
+        case 'inProgress':
+          setFilteredTodos(
+            todos.filter((todo) => todo.todoStatus === 'inProgress')
+          );
+          break;
+        case 'done':
+          setFilteredTodos(todos.filter((todo) => todo.todoStatus === 'done'));
+          break;
+        default:
+          setFilteredTodos(todos);
+      }
+    };
     filteringTodos();
-  }, [filter, filteringTodos]);
+  }, [filter, todos]);
 
-  // const changeNewTodos = useCallback((newTodos) => {
-  //   setTodos(newTodos);
-  // }, []);
-
-  // useEffect(
-  //   () => {
-  //     const newTodos = todos.map((todo) =>
-  //       todo.id === statusChangeId
-  //         ? { ...todo, todoStatus: status }
-  //         : { ...todo }
-  //     );
-  //     changeNewTodos(newTodos);
-  //   },
-  //   [status, changeNewTodos, statusChangeId]
-  // );
-
+  /** Todoの状態変更 */
   const handleStatusChange = (id,e) => {
     const newTodos = todos.map((todo) =>
         todo.id === id
@@ -156,12 +138,6 @@ const App = () => {
             <span>{todo.title}</span>
             <select
               value={todo.todoStatus}
-              // onChange={(e) => {
-              //   setStatus(() => {
-              //     setStatusChangeId(todo.id);
-              //     return e.target.value;
-              //   });
-              // }}
               onChange={(e)=> handleStatusChange(todo.id, e)}
             >
               <option value='notStarted'>未着手</option>
