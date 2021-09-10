@@ -13,9 +13,8 @@ const App = () => {
   /** 作成フォームの状態制御 */
   const handleAddFormChanges = (e) => {
     setTodoTitle(e.target.value);
-  };
+  }; /** 編集フォームの状態制御 */
 
-　　　/** 編集フォームの状態制御 */
   const handleEditFormChanges = (e) => {
     setNewTitle(e.target.value);
   };
@@ -47,7 +46,7 @@ const App = () => {
     setTodoId(todoId + 1);
     resetFormInput();
   };
-  
+
   /** Todo削除 */
   const handleDeleteTodo = (targetTodo) => {
     setTodos(todos.filter((todo) => todo !== targetTodo));
@@ -61,6 +60,14 @@ const App = () => {
     setNewTitle('');
     handleCloseEditForm();
     setEditIndex();
+  };
+
+  /** Todoの状態変更 */
+  const handleStatusChange = (id, e) => {
+    const newTodos = todos.map((todo) =>
+      todo.id === id ? { ...todo, status: e.target.value } : todo
+    );
+    setTodos(newTodos);
   };
 
   return (
@@ -95,7 +102,10 @@ const App = () => {
         {todos.map((todo, index) => (
           <li key={todo.id}>
             <span>{todo.title}</span>
-            <select　value={todo.status}>
+            <select
+              value={todo.status}
+              onChange={(e) => handleStatusChange(todo.id, e)}
+            >
               <option value='notStarted'>未着手</option>
               <option value='inProgress'>作業中</option>
               <option value='done'>完了</option>
