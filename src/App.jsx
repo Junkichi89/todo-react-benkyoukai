@@ -6,6 +6,7 @@ const App = () => {
   const [todoTitle, setTodoTitle] = useState('');
   const [todoId, setTodoId] = useState(0);
 
+  const [filter, setFilter] = useState('notStarted');
   const [isEditable, setIsEditable] = useState(false);
   const [editIndex, setEditIndex] = useState();
   const [newTitle, setNewTitle] = useState('');
@@ -96,6 +97,13 @@ const App = () => {
           <button onClick={handleCloseEditForm}>キャンセル</button>
         </>
       )}
+
+      <select value={filter} onChange={(e)=> setFilter(e.target.value)}>
+        <option value='all'>すべて</option>
+        <option value='notStarted'>未着手</option>
+        <option value='inProgress'>作業中</option>
+        <option value='done'>完了</option>
+      </select>
 
       {/* Todoリスト */}
       <ul>
