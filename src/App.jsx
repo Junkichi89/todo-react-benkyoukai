@@ -42,7 +42,7 @@ const App = () => {
   const handleAddTodo = () => {
     setTodos([
       ...todos,
-      { id: todoId, title: todoTitle },
+      { id: todoId, title: todoTitle, status: 'notStarted' },
     ]);
     setTodoId(todoId + 1);
     resetFormInput();
@@ -95,7 +95,7 @@ const App = () => {
         {todos.map((todo, index) => (
           <li key={todo.id}>
             <span>{todo.title}</span>
-            <select>
+            <select　value={todo.status}>
               <option value='notStarted'>未着手</option>
               <option value='inProgress'>作業中</option>
               <option value='done'>完了</option>
