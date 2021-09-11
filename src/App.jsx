@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const App = () => {
   /** Todoリスト */
   const [todos, setTodos] = useState([]);
   const [todoTitle, setTodoTitle] = useState('');
   const [todoId, setTodoId] = useState(0);
+  const [filteredTodos, setFilteredTodos] = useState([]);
 
   const [filter, setFilter] = useState('notStarted');
   const [isEditable, setIsEditable] = useState(false);
@@ -71,6 +72,31 @@ const App = () => {
     setTodos(newTodos);
   };
 
+  /** Todoの絞り込みを検値 */
+
+  useEffect(() => {
+    const filteringTodos = () => {
+      switch (filter) {
+        case 'notStarted':
+          setFilteredTodos(
+            todos.filter((todo) => todo.status === 'notStarted')
+          );
+          break;
+        case 'inProgress':
+          setFilteredTodos(
+            todos.filter((todo) => todo.status === 'inProgress')
+          );
+          break;
+        case 'done':
+          setFilteredTodos(todos.filter((todo) => todo.status === 'done'));
+          break;
+        default:
+          setFilteredTodos(todos);
+      }
+    };
+    filteringTodos();
+  }, [filter, todos]);
+
   return (
     <>
       {!isEditable ? (
@@ -107,7 +133,7 @@ const App = () => {
 
       {/* Todoリスト */}
       <ul>
-        {todos.map((todo, index) => (
+        {filteredTodos.map((todo, index) => (
           <li key={todo.id}>
             <span>{todo.title}</span>
             <select
