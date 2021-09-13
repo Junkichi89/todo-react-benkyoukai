@@ -80,12 +80,6 @@ const App = () => {
   };
 
   useEffect(() => {
-
-  }, [])
-
-  useEffect(() => {
-    console.log('依存関係の確認');
-
     const filteringTodos = () => {
       switch (filter) {
         case 'notStarted':
