@@ -5,18 +5,19 @@ const App = () => {
   const [todos, setTodos] = useState([]);
   const [todoTitle, setTodoTitle] = useState('');
   const [todoId, setTodoId] = useState(0);
-  const [status, setStatus] = useState('notStarted');
-  const [statusChangeId, setStatusChangeId] = useState();
-  const [filter, setFilter] = useState('notStarted');
+  const [filteredTodos, setFilteredTodos] = useState([]);
 
+  const [filter, setFilter] = useState('notStarted');
   const [isEditable, setIsEditable] = useState(false);
-  const [editIndex, setEditIndex] = useState();
+  const [editId, setEditId] = useState();
   const [newTitle, setNewTitle] = useState('');
 
   /** 作成フォームの状態制御 */
   const handleAddFormChanges = (e) => {
     setTodoTitle(e.target.value);
   };
+
+  /** 編集フォームの状態制御 */
 
   const handleEditFormChanges = (e) => {
     setNewTitle(e.target.value);
@@ -28,98 +29,111 @@ const App = () => {
   };
 
   /** 編集フォーム表示 */
-  const openEditForm = (index) => {
+  const handleOpenEditForm = ({id, title}) => {
     setIsEditable(true);
-    setEditIndex(index);
-    setNewTitle(todos[index].title);
+    setEditId(id);
+    setNewTitle(title);
   };
 
   /** 編集フォームを閉じる */
-  const closeEditForm = () => {
+  const handleCloseEditForm = () => {
     setIsEditable(false);
-    setEditIndex();
+    setEditId();
   };
 
   /** Todo新規作成 */
-  const addTodo = () => {
-    setTodos([...todos, { id: todoId, title: todoTitle, todoStatus: status }]);
+  const handleAddTodo = () => {
+    setTodos([
+      ...todos,
+      { id: todoId, title: todoTitle, status: 'notStarted' },
+    ]);
     setTodoId(todoId + 1);
     resetFormInput();
   };
 
   /** Todo削除 */
-  const deleteTodo = (targetTodo) => {
+  const handleDeleteTodo = (targetTodo) => {
     setTodos(todos.filter((todo) => todo !== targetTodo));
   };
 
   /** Todo編集 */
-  const editTodo = () => {
+  const handleEditTodo = () => {
     const newTodos = todos.map((todo) => ({ ...todo }));
-    newTodos[editIndex].title = newTitle;
-    setTodos(newTodos);
+
+    setTodos(()=> newTodos.map((todo) => 
+      todo.id = editId ? {...todo, title: newTitle} : todo
+    ));
     setNewTitle('');
-    closeEditForm();
-    setEditIndex();
+    handleCloseEditForm();
+    setEditId();
   };
 
-  /** Todoの状態変更 */
+  //todoの状態管理
+  const handleStatusChange = ({ id }, e) => {
+    const newTodos = todos.map((todo) => ({ ...todo }));
 
-  const filteredTodos = todos.filter((todo) => {
-    switch (filter) {
-      case 'notStarted':
-        return todo.todoStatus === 'notStarted';
-      case 'inProgress':
-        return todo.todoStatus === 'inProgress';
-      case 'done':
-        return todo.todoStatus === 'done';
-      default:
-        return todo;
-    }
-  });
-
-  const handleChangeStatus = function() {
-    const newTodos = filteredTodos.map((todo) =>
-    todo.id === statusChangeId ? { ...todo, todoStatus: status } : { ...todo }
-  );
-  setTodos(newTodos);
-  }
+    setTodos(
+      newTodos.map((todo) =>
+        todo.id === id ? { ...todo, status: e.target.value } : todo
+      )
+    );
+  };
 
   useEffect(() => {
-    handleChangeStatus();
-  }, [status]);
+
+  }, [])
+
+  useEffect(() => {
+    console.log('依存関係の確認');
+
+    const filteringTodos = () => {
+      switch (filter) {
+        case 'notStarted':
+          setFilteredTodos(
+            todos.filter((todo) => todo.status === 'notStarted')
+          );
+          break;
+        case 'inProgress':
+          setFilteredTodos(
+            todos.filter((todo) => todo.status === 'inProgress')
+          );
+          break;
+        case 'done':
+          setFilteredTodos(todos.filter((todo) => todo.status === 'done'));
+          break;
+        default:
+          setFilteredTodos(todos);
+      }
+    };
+    filteringTodos();
+  }, [filter, todos]);
 
   return (
     <>
-      {(() => {
-        if (!isEditable) {
-          /* 新規作成フォーム */
-          return (
-            <>
-              <input
-                type='text'
-                label='タイトル'
-                value={todoTitle}
-                onChange={handleAddFormChanges}
-              />
-              <button onClick={addTodo}>作成</button>
-            </>
-          );
-        } else {
-          /* 編集フォーム */
-          return (
-            <>
-              <input
-                type='text'
-                label='新しいタイトル'
-                value={newTitle}
-                onChange={handleEditFormChanges}
-              />
-              <button onClick={editTodo}>編集を保存</button>
-              <button onClick={closeEditForm}>キャンセル</button>
-            </>
-          );
-        }
-      })()}
+      {!isEditable ? (
+        /* 新規作成フォーム */
+        <>
+          <input
+            type='text'
+            label='タイトル'
+            value={todoTitle}
+            onChange={handleAddFormChanges}
+          />
+          <button onClick={handleAddTodo}>作成</button>
+        </>
+      ) : (
+        /* 編集フォーム */
+        <>
+          <input
+            type='text'
+            label='新しいタイトル'
+            value={newTitle}
+            onChange={handleEditFormChanges}
+          />
+          <button onClick={handleEditTodo}>編集を保存</button>
+          <button onClick={handleCloseEditForm}>キャンセル</button>
+        </>
+      )}
 
       <select value={filter} onChange={(e) => setFilter(e.target.value)}>
         <option value='all'>すべて</option>
@@ -130,24 +144,19 @@ const App = () => {
 
       {/* Todoリスト */}
       <ul>
-        {filteredTodos.map((todo, index) => (
+        {filteredTodos.map(todo => (
           <li key={todo.id}>
             <span>{todo.title}</span>
             <select
-              value={todo.todoStatus}
-              onChange={(e) => {
-                setStatus(() => {
-                  setStatusChangeId(todo.id);
-                  return e.target.value;
-                });
-              }}
+              value={todo.status}
+              onChange={(e) => handleStatusChange(todo, e)}
             >
               <option value='notStarted'>未着手</option>
               <option value='inProgress'>作業中</option>
               <option value='done'>完了</option>
             </select>
-            <button onClick={() => openEditForm(index)}>編集</button>
-            <button onClick={() => deleteTodo(todo)}>削除</button>
+            <button onClick={() => handleOpenEditForm(todo)}>編集</button>
+            <button onClick={() => handleDeleteTodo(todo)}>削除</button>
           </li>
         ))}
       </ul>
