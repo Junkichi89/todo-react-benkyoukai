@@ -4,7 +4,6 @@ const App = () => {
   /** Todoリスト */
   const [todos, setTodos] = useState([]);
   const [todoTitle, setTodoTitle] = useState('');
-  const [todoId, setTodoId] = useState(0);
   const [filteredTodos, setFilteredTodos] = useState([]);
 
   const [filter, setFilter] = useState('notStarted');
@@ -45,9 +44,8 @@ const App = () => {
   const handleAddTodo = () => {
     setTodos([
       ...todos,
-      { id: todoId, title: todoTitle, status: 'notStarted' },
+      { id: todos.length + 1, title: todoTitle, status: 'notStarted' },
     ]);
-    setTodoId(todoId + 1);
     resetFormInput();
   };
 
