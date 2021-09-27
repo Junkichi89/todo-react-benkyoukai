@@ -12,18 +12,18 @@ const App = () => {
   const [newTitle, setNewTitle] = useState('');
 
   /** 作成フォームの状態制御 */
-  const handleAddFormChanges = (e) => {
+  const handleSetTodoTitle = (e) => {
     setTodoTitle(e.target.value);
   };
 
   /** 編集フォームの状態制御 */
 
-  const handleEditFormChanges = (e) => {
+  const handleSetNewTitle = (e) => {
     setNewTitle(e.target.value);
   };
 
   /** 入力欄をリセット（空欄にする） */
-  const resetFormInput = () => {
+  const resetTodoTitle = () => {
     setTodoTitle('');
   };
 
@@ -46,7 +46,7 @@ const App = () => {
       ...todos,
       { id: todos.length + 1, title: todoTitle, status: 'notStarted' },
     ]);
-    resetFormInput();
+    resetTodoTitle();
   };
 
   /** Todo削除 */
@@ -109,7 +109,7 @@ const App = () => {
             type='text'
             label='タイトル'
             value={todoTitle}
-            onChange={handleAddFormChanges}
+            onChange={handleSetTodoTitle}
           />
           <button onClick={handleAddTodo}>作成</button>
         </>
@@ -120,7 +120,7 @@ const App = () => {
             type='text'
             label='新しいタイトル'
             value={newTitle}
-            onChange={handleEditFormChanges}
+            onChange={handleSetNewTitle}
           />
           <button onClick={handleEditTodo}>編集を保存</button>
           <button onClick={handleCloseEditForm}>キャンセル</button>
