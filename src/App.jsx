@@ -59,7 +59,7 @@ const App = () => {
     const newTodos = todos.map((todo) => ({ ...todo }));
 
     setTodos(()=> newTodos.map((todo) => 
-      todo.id = editId ? {...todo, title: newTitle} : todo
+      todo.id === editId ? {...todo, title: newTitle} : todo
     ));
     setNewTitle('');
     handleCloseEditForm();
